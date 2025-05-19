@@ -1,10 +1,10 @@
 version: 0.2
-
+ 
 env:
   variables:
     AWS_REGION: us-east-1
     REPOSITORY_URI: 314146327659.dkr.ecr.us-east-1.amazonaws.com/backend-repo
-
+ 
 phases:
   pre_build:
     commands:
@@ -14,14 +14,14 @@ phases:
       - IMAGE_TAG=${COMMIT_HASH:=latest}
       - echo Building Spring Boot project...
       - mvn clean install -DskipTests
-
+ 
   build:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
       - docker build -t $REPOSITORY_URI:latest .
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
-
+ 
   post_build:
     commands:
       - echo Build completed on `date`
@@ -30,7 +30,7 @@ phases:
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - echo Writing imagedefinitions.json file...
       - printf '[{"name":"backend","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
-
+ 
 artifacts:
   files:
     - imagedefinitions.json
